@@ -3,6 +3,7 @@ version: '3'
 services:
   app:
     build: ./
+    tty: true
     volumes:
       - ./src:/usr/app
     command: sh -c "yarn dev"
