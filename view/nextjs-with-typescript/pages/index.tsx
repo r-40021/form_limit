@@ -13,10 +13,10 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import FormHelperText from '@mui/material/FormHelperText';
-import InputAdornment from '@mui/material/InputAdornment';
+import RadioGroup from '@mui/material/RadioGroup';
+import Radio from '@mui/material/Radio';
 
 
 
@@ -32,13 +32,19 @@ const Home: NextPage = () => {
   }
 
   const [question, selectQuestion] = React.useState('');
+  const [nowLimit, changeLimit] = React.useState('always');
 
   const handleChange = (event: SelectChangeEvent<string>): void => {
     selectQuestion(event.target.value as string);
   };
+
+  const handleChangeRadio = (event: SelectChangeEvent<string>): void => {
+    changeLimit(event.target.value);
+  };
+
   return (
     <React.Fragment>
-      <Container maxWidth="lg">
+      <Container maxWidth='lg'>
         <GlobalStyles styles={{ body: { backgroundColor: '#f1f1f1' } }} />
         <Card
           sx={{
@@ -49,17 +55,17 @@ const Home: NextPage = () => {
           className={styles.contentCard}
         >
           <CardContent>
-            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            <Typography sx={{ fontSize: 14 }} color='text.secondary' gutterBottom>
               STEP 1
             </Typography>
-            <Typography variant="h5" component="div">
+            <Typography variant='h5' component='div'>
               定員を設ける対象を選ぶ
             </Typography>
-            <FormControl variant="filled" sx={{ mx: 1, my: 2, minWidth: '40%' }}>
-              <InputLabel id="question-label">対象</InputLabel>
+            <FormControl variant='filled' sx={{ mx: 1, my: 2, minWidth: '40%' }}>
+              <InputLabel id='question-label'>対象</InputLabel>
               <Select
-                labelId="question-label"
-                id="select-question"
+                labelId='question-label'
+                id='select-question'
                 value={question}
                 onChange={handleChange}
               >
@@ -83,10 +89,10 @@ const Home: NextPage = () => {
           className={styles.contentCard}
         >
           <CardContent>
-            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            <Typography sx={{ fontSize: 14 }} color='text.secondary' gutterBottom>
               STEP 2
             </Typography>
-            <Typography variant="h5" component="div">
+            <Typography variant='h5' component='div'>
               定員を設定する
             </Typography>
             <Box sx={{ mx: 1, my: 2 }}>
@@ -95,31 +101,31 @@ const Home: NextPage = () => {
                   <p>1時～2時</p>
                 </Grid>
                 <Grid item sm={6} xs={12}>
-                  <TextField id="filled-basic" label="定員" variant="filled" type="number" size='small' />
+                  <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' />
                 </Grid>
                 <Grid item sm={6} xs={12}>
                   <p>2時～3時</p>
                 </Grid>
                 <Grid item sm={6} xs={12}>
-                  <TextField id="filled-basic" label="定員" variant="filled" type="number" size='small' />
+                  <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' />
                 </Grid>
                 <Grid item sm={6} xs={12}>
                   <p>2時～3時</p>
                 </Grid>
                 <Grid item sm={6} xs={12}>
-                  <TextField id="filled-basic" label="定員" variant="filled" type="number" size='small' />
+                  <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' />
                 </Grid>
                 <Grid item sm={6} xs={12}>
                   <p>2時～3時</p>
                 </Grid>
                 <Grid item sm={6} xs={12}>
-                  <TextField id="filled-basic" label="定員" variant="filled" type="number" size='small' />
+                  <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' />
                 </Grid>
                 <Grid item sm={6} xs={12}>
                   <p>2時～3時</p>
                 </Grid>
                 <Grid item sm={6} xs={12}>
-                  <TextField id="filled-basic" label="定員" variant="filled" type="number" size='small' />
+                  <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' />
                 </Grid>
               </Grid>
             </Box>
@@ -136,14 +142,28 @@ const Home: NextPage = () => {
           className={styles.contentCard}
         >
           <CardContent>
-            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            <Typography sx={{ fontSize: 14 }} color='text.secondary' gutterBottom>
               STEP 3
             </Typography>
-            <Typography variant="h5" component="div">
-              詳細設定を行う
+            <Typography variant='h5' component='div'>
+              残り枠数の表示条件を設定する
             </Typography>
             <Box sx={{ mx: 1, my: 2 }}>
-              <FormControlLabel control={<Checkbox defaultChecked />} label="あいうえお" />
+              <FormControl>
+                <RadioGroup
+                  defaultValue='always'
+                  name='conditions-for-displaying-the number'
+                  onChange={handleChangeRadio}
+                >
+                  <FormControlLabel value='always' control={<Radio />} label='常に表示' />
+                  <FormControlLabel value='controlled' control={<Radio />} label='一定枠数以下になったら表示' />
+                  {nowLimit === 'controlled' ?
+                    <TextField id='the-number' label='この枠数以下になったら表示' variant='filled' type='number' />
+                    : ''
+                  }
+                  <FormControlLabel value='after0' control={<Radio />} label='残り枠数が0になるまで非表示' />
+                </RadioGroup>
+              </FormControl>
             </Box>
 
           </CardContent>
