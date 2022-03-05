@@ -14,7 +14,6 @@
     "@emotion/react": "latest",
     "@emotion/server": "latest",
     "@emotion/styled": "latest",
-    "@linaria/atomic": "^3.0.0-beta.15",
     "@linaria/babel-preset": "^3.0.0-beta.15",
     "@linaria/core": "^3.0.0-beta.15",
     "@linaria/react": "^3.0.0-beta.15",
@@ -25,8 +24,7 @@
     "next": "latest",
     "next-linaria": "^0.11.0",
     "react": "latest",
-    "react-dom": "latest",
-    "react-icons": "^4.3.1"
+    "react-dom": "latest"
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",
