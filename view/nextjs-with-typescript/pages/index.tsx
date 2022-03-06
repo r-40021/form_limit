@@ -17,6 +17,7 @@ import Grid from '@mui/material/Grid';
 import FormHelperText from '@mui/material/FormHelperText';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
+import StepCard from '../src/createStepCard';
 
 
 
@@ -46,22 +47,12 @@ const Home: NextPage = () => {
     <React.Fragment>
       <Container maxWidth='lg'>
         <GlobalStyles styles={{ body: { backgroundColor: '#f1f1f1' } }} />
-        <Card
-          sx={{
-            my: 3,
-            py: 1,
-            px: 1
-          }}
-          className={styles.contentCard}
-        >
-          <CardContent>
-            <Typography sx={{ fontSize: 14 }} color='text.secondary' gutterBottom>
-              STEP 1
-            </Typography>
-            <Typography variant='h5' component='div'>
-              定員を設ける対象を選ぶ
-            </Typography>
-            <FormControl variant='filled' sx={{ mx: 1, my: 2, minWidth: '40%' }}>
+        <StepCard
+          step={1}
+          title='定員を設ける対象を選ぶ'
+          cardContent=
+          {
+            <FormControl variant='filled'>
               <InputLabel id='question-label'>対象</InputLabel>
               <Select
                 labelId='question-label'
@@ -76,99 +67,60 @@ const Home: NextPage = () => {
               </Select>
               <FormHelperText>選択肢ごとに定員を設ける場合は、該当する設問を選択します。<br />フォーム全体の回答数を制限する場合は、「このフォーム全体」を選択します。</FormHelperText>
             </FormControl>
-          </CardContent>
+          } />
 
-        </Card>
+        <StepCard step={2} title='定員を設定する' cardContent={
+          <Grid container spacing={2}>
+            <Grid item sm={6} xs={12}>
+              <p>1時～2時</p>
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' min={0} step={1} />
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              <p>2時～3時</p>
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' min={0} step={1} />
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              <p>2時～3時</p>
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' min={0} step={1} />
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              <p>2時～3時</p>
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' min={0} step={1} />
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              <p>2時～3時</p>
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' min={0} step={1} />
+            </Grid> 
+          </Grid>
+        } />
 
-        <Card
-          sx={{
-            my: 3,
-            py: 1,
-            px: 1
-          }}
-          className={styles.contentCard}
-        >
-          <CardContent>
-            <Typography sx={{ fontSize: 14 }} color='text.secondary' gutterBottom>
-              STEP 2
-            </Typography>
-            <Typography variant='h5' component='div'>
-              定員を設定する
-            </Typography>
-            <Box sx={{ mx: 1, my: 2 }}>
-              <Grid container spacing={2}>
-                <Grid item sm={6} xs={12}>
-                  <p>1時～2時</p>
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' />
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <p>2時～3時</p>
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' />
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <p>2時～3時</p>
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' />
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <p>2時～3時</p>
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' />
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <p>2時～3時</p>
-                </Grid>
-                <Grid item sm={6} xs={12}>
-                  <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' />
-                </Grid>
-              </Grid>
-            </Box>
-          </CardContent>
-
-        </Card>
-
-        <Card
-          sx={{
-            my: 3,
-            py: 1,
-            px: 1
-          }}
-          className={styles.contentCard}
-        >
-          <CardContent>
-            <Typography sx={{ fontSize: 14 }} color='text.secondary' gutterBottom>
-              STEP 3
-            </Typography>
-            <Typography variant='h5' component='div'>
-              残り枠数の表示条件を設定する
-            </Typography>
-            <Box sx={{ mx: 1, my: 2 }}>
-              <FormControl>
-                <RadioGroup
-                  defaultValue='always'
-                  name='conditions-for-displaying-the number'
-                  onChange={handleChangeRadio}
-                >
-                  <FormControlLabel value='always' control={<Radio />} label='常に表示' />
-                  <FormControlLabel value='controlled' control={<Radio />} label='一定枠数以下になったら表示' />
-                  {nowLimit === 'controlled' ?
-                    <TextField id='the-number' label='この枠数以下になったら表示' variant='filled' type='number' />
-                    : ''
-                  }
-                  <FormControlLabel value='after0' control={<Radio />} label='残り枠数が0になるまで非表示' />
-                </RadioGroup>
-              </FormControl>
-            </Box>
-
-          </CardContent>
-
-        </Card>
+        <StepCard step={3} title='残り枠数の表示条件を設定する' cardContent={
+          <FormControl>
+            <RadioGroup
+              defaultValue='always'
+              name='conditions-for-displaying-the number'
+              onChange={handleChangeRadio}
+            >
+              <FormControlLabel value='always' control={<Radio />} label='常に表示' />
+              <FormControlLabel value='controlled' control={<Radio />} label='一定枠数以下になったら表示' />
+              {nowLimit === 'controlled' ?
+                <TextField id='the-number' label='この枠数以下になったら表示' variant='filled' type='number' />
+                : ''
+              }
+              <FormControlLabel value='after0' control={<Radio />} label='残り枠数が0になるまで非表示' />
+            </RadioGroup>
+          </FormControl>
+        } />
 
       </Container>
     </React.Fragment>
