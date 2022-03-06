@@ -1,47 +1,40 @@
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import Container from '@mui/material/Container';
 import GlobalStyles from '@mui/material/GlobalStyles';
-import Typography from '@mui/material/Typography';
 import { NextPage } from 'next';
 import * as React from 'react';
-import { css } from '@linaria/core';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Grid from '@mui/material/Grid';
 import FormHelperText from '@mui/material/FormHelperText';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import StepCard from '../src/createStepCard';
+import ChoiceList from '../src/choiceList';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import DoneIcon from '@mui/icons-material/Done';
 
 
 
 const Home: NextPage = () => {
-  const styles = {
-    icon: css`
-      vertical-align: -4px;
-      margin-right: .5em;
-    `,
-    contentCard: css`
-      background-color: #fff;
-    `
-  }
 
-  const [question, selectQuestion] = React.useState('');
+  const [question, selectQuestion] = React.useState(0);
   const [nowLimit, changeLimit] = React.useState('always');
 
-  const handleChange = (event: SelectChangeEvent<string>): void => {
-    selectQuestion(event.target.value as string);
+  const handleChange = (event: SelectChangeEvent<number>): void => {
+    selectQuestion(event.target.value as number);
   };
 
   const handleChangeRadio = (event: SelectChangeEvent<string>): void => {
     changeLimit(event.target.value);
   };
+
+  const handleClickDoneButton = () => {
+    alert('Done!');
+  }
 
   return (
     <React.Fragment>
@@ -70,38 +63,7 @@ const Home: NextPage = () => {
           } />
 
         <StepCard step={2} title='定員を設定する' cardContent={
-          <Grid container spacing={2}>
-            <Grid item sm={6} xs={12}>
-              <p>1時～2時</p>
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' min={0} step={1} />
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <p>2時～3時</p>
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' min={0} step={1} />
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <p>2時～3時</p>
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' min={0} step={1} />
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <p>2時～3時</p>
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' min={0} step={1} />
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <p>2時～3時</p>
-            </Grid>
-            <Grid item sm={6} xs={12}>
-              <TextField id='filled-basic' label='定員' variant='filled' type='number' size='small' min={0} step={1} />
-            </Grid> 
-          </Grid>
+          <ChoiceList choiceList={['13~14時', '14~15時', '15~16時', '16~17時', '17~18時']} />
         } />
 
         <StepCard step={3} title='残り枠数の表示条件を設定する' cardContent={
@@ -121,7 +83,14 @@ const Home: NextPage = () => {
             </RadioGroup>
           </FormControl>
         } />
-
+        <Box sx={{ pb: 3, textAlign: 'right' }}>
+          <Button
+            variant="contained"
+            startIcon={<DoneIcon />}
+            onClick={handleClickDoneButton}>
+            適用して閉じる
+          </Button>
+        </Box>
       </Container>
     </React.Fragment>
   );
