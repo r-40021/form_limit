@@ -28,6 +28,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",
+    "@google/clasp": "^2.4.1",
+    "@types/google-apps-script": "^1.0.45",
     "@types/node": "latest",
     "@types/react": "latest",
     "eslint": "latest",

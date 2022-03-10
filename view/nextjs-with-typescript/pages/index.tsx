@@ -37,7 +37,6 @@ const Home: NextPage = () => {
   }
 
   return (
-    <React.Fragment>
       <Container maxWidth='lg'>
         <GlobalStyles styles={{ body: { backgroundColor: '#f1f1f1' } }} />
         <StepCard
@@ -92,7 +91,6 @@ const Home: NextPage = () => {
           </Button>
         </Box>
       </Container>
-    </React.Fragment>
   );
 };
 
