@@ -4,6 +4,7 @@ services:
   app:
     build: ./
     tty: true
+    user: node
     volumes:
       - .:/app
     ports:

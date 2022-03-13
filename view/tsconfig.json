@@ -5,6 +5,6 @@
     "module": "ES2015", // TSのモジュールはES Modulesとして出力
     "strict": true
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "src/ts/index.ts"],
   "exclude": ["node_modules"]
 }
