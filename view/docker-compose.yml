@@ -4,6 +4,7 @@ services:
   app:
     build: ./
     tty: true
+    user: node
     volumes:
       - ./nextjs-with-typescript:/usr/app
     command: sh -c "yarn dev"
