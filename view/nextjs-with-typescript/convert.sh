@@ -17,7 +17,9 @@ do
     newPath=./gas/${fileName}
     scp $htmlDir $newPath
     absJSPath=`echo ${jsDir} | sed 's/\.\/out//'`
-    echo ''${absJSPath}''
-    sed -i -e `s|\<script src="${absJSPath}" defer=""\>\<\/script\>|いれかえ|g` ${newPath}
+    echo '<script src="'${absJSPath}'" defer=""></script>'
+    sed 's|<script src="'${absJSPath}'" defer=""></script>|newScript|g' ${newPath} > temp.txt
+    cat temp.txt > ${newPath}
   done
+  rm temp.txt
 done
