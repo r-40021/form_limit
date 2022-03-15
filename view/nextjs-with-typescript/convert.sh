@@ -10,14 +10,14 @@ do
   scp $jsDir $newPath
   sed -i -e "1s/^/<script>/" ${newPath}
   sed -i "\$a </script>" ${newPath}
-  echo ${jsDir}
 
   for htmlDir in $htmlDirs;
   do
     fileName=`basename $htmlDir`
     newPath=./gas/${fileName}
     scp $htmlDir $newPath
-    relativeJSPath=`sed -e 's/./' ${jsDir}`
-    sed -i -e 's/\<script src="${relativeJSPath}" defer=""\>\<\/script\>/いれかえ/' ${newPath}
+    absJSPath=`echo ${jsDir} | sed 's/\.\/out//'`
+    echo ''${absJSPath}''
+    sed -i -e `s|\<script src="${absJSPath}" defer=""\>\<\/script\>|いれかえ|g` ${newPath}
   done
 done
