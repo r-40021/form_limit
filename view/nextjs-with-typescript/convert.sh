@@ -1,25 +1,36 @@
 #!/bin/sh
-jsDirs=`find ./out/_next -type f -and -name \*.js`
+jsDirs=`find ./out -type f -and -name \*.js`
 htmlDirs=`find ./out -type f -and -name \*.html`
+cssDirs=`find ./out -type f -and -name \*.css`
 mkdir -p gas
 
-for jsDir in $jsDirs;
-do
-  fileName=`basename $jsDir`
-  newPath=./gas/${fileName}.html
-  scp $jsDir $newPath
-  sed -i -e "1s/^/<script>/" ${newPath}
-  sed -i "\$a </script>" ${newPath}
+# HTML 書き換え
 
-  for htmlDir in $htmlDirs;
+for htmlDir in $htmlDirs;
+do
+  fileName=`basename $htmlDir`
+  newPath=./gas/${fileName}
+  scp $htmlDir $newPath
+  # JavaScript
+  for jsDir in $jsDirs;
   do
-    fileName=`basename $htmlDir`
-    newPath=./gas/${fileName}
-    scp $htmlDir $newPath
+    jsContent=`cat ${jsDir}`
+    addJSContent="<script>${jsContent}</script>"
     absJSPath=`echo ${jsDir} | sed 's/\.\/out//'`
     echo '<script src="'${absJSPath}'" defer=""></script>'
-    sed 's|<script src="'${absJSPath}'" defer=""></script>|newScript|g' ${newPath} > temp.txt
-    cat temp.txt > ${newPath}
+    sed -i 's|<script src="'${absJSPath}'" defer=""></script>|'${addJSContent}'|g' ${newPath}
+    sed -i 's|<script defer="" nomodule="" src="'${absJSPath}'"></script>|'${addJSContent}'|g' ${newPath}
   done
-  rm temp.txt
+
+  # CSS
+  for cssDir in $cssDirs;
+  do
+    cssContent=`cat ${cssDir}`
+    addCSSContent="<style>${cssContent}</style>"
+    absCSSPath=`echo ${cssDir} | sed 's/\.\/out//'`
+    echo ${absCSSPath}
+    sed -i 's|<link rel="preload" href="'${absCSSPath}'" as="style"/>|'${addCSSContent}'|g' ${newPath}
+    sed -i 's|<link rel="stylesheet" href="'${absCSSPath}'" data-n-p=""/>|'${addCSSContent}'|g' ${newPath}
+  done
+
 done
