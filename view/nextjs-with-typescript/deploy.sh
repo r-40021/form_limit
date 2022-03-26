@@ -17,9 +17,11 @@ do
     jsContent=`cat ${jsDir}`
     addJSContent="<script>${jsContent}</script>"
     absJSPath=`echo ${jsDir} | sed 's/\.\/out//'`
-    echo '<script src="'${absJSPath}'" defer=""></script>'
-    sed -i 's|<script src="'${absJSPath}'" defer=""></script>|'${addJSContent}'|g' ${newPath}
-    sed -i 's|<script defer="" nomodule="" src="'${absJSPath}'"></script>|'${addJSContent}'|g' ${newPath}
+    echo ${newPath}
+    sed -i 's/:/\:/g' ${newPath}
+    # sed -i 's:<script src="'${absJSPath}'" defer=""></script>:'${addJSContent}':g' ${newPath}
+    # sed -i 's:<script defer="" nomodule="" src="'${absJSPath}'"></script>:'${addJSContent}':g' ${newPath}
+    sed -i 's/\:/:/g' ${newPath}
   done
 
   # CSS
