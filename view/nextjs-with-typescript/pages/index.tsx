@@ -33,7 +33,7 @@ const Home: NextPage = () => {
   };
 
   const handleClickDoneButton = () => {
-    alert('Done!');
+    alert('Done!!');
   }
 
   return (
