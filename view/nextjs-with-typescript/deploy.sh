@@ -14,14 +14,11 @@ do
   # JavaScript
   for jsDir in $jsDirs;
   do
-    jsContent=`cat ${jsDir}`
-    addJSContent="<script>${jsContent}</script>"
     absJSPath=`echo ${jsDir} | sed 's/\.\/out//'`
-    echo ${newPath}
-    sed -i 's/:/\:/g' ${newPath}
-    # sed -i 's:<script src="'${absJSPath}'" defer=""></script>:'${addJSContent}':g' ${newPath}
-    # sed -i 's:<script defer="" nomodule="" src="'${absJSPath}'"></script>:'${addJSContent}':g' ${newPath}
-    sed -i 's/\:/:/g' ${newPath}
+    JSFileName=`basename $jsDir`
+    JSOnlyFileName=`echo ${JSFileName} | sed 's/.js//'`
+    sed -i 's|<script src="'${absJSPath}'" defer=""></script>|<?!= HtmlService.createHtmlOutputFromFile('\'$JSOnlyFileName\'').getContent(); ?>|g' ${newPath}
+    sed -i 's|<script defer="" nomodule="" src="'${absJSPath}'"></script>|<?!= HtmlService.createHtmlOutputFromFile('\'$JSOnlyFileName\'').getContent(); ?>|g' ${newPath}
   done
 
   # CSS
@@ -30,7 +27,6 @@ do
     cssContent=`cat ${cssDir}`
     addCSSContent="<style>${cssContent}</style>"
     absCSSPath=`echo ${cssDir} | sed 's/\.\/out//'`
-    echo ${absCSSPath}
     sed -i 's|<link rel="preload" href="'${absCSSPath}'" as="style"/>|'${addCSSContent}'|g' ${newPath}
     sed -i 's|<link rel="stylesheet" href="'${absCSSPath}'" data-n-p=""/>|'${addCSSContent}'|g' ${newPath}
   done
