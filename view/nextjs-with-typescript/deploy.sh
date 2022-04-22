@@ -16,7 +16,7 @@ do
   do
     absJSPath=`echo ${jsDir} | sed 's/\.\/out//'`
     JSFileName=`basename $jsDir`
-    JSOnlyFileName=`echo ${JSFileName} | sed 's/.js//'`
+    JSOnlyFileName=`echo ${JSFileName} | sed 's/.html//'`
     sed -i 's|<script src="'${absJSPath}'" defer=""></script>|<?!= HtmlService.createHtmlOutputFromFile('\'$JSOnlyFileName\'').getContent(); ?>|g' ${newPath}
     sed -i 's|<script defer="" nomodule="" src="'${absJSPath}'"></script>|<?!= HtmlService.createHtmlOutputFromFile('\'$JSOnlyFileName\'').getContent(); ?>|g' ${newPath}
   done
@@ -32,3 +32,5 @@ do
   done
 
 done
+
+yarn clasp push

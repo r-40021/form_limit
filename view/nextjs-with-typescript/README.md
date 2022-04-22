@@ -43,3 +43,12 @@ More information [in the documentation](https://mui.com/guides/routing/#next-js)
 
 You now have a working example project.
 You can head back to the documentation, continuing browsing it from the [templates](https://mui.com/getting-started/templates/) section.
+
+## Deploy to GAS
+Please make `clasp.json` under `nextjs-with-typescript/`.
+
+And run the following command.
+
+```bash
+sh deploy.sh
+```
