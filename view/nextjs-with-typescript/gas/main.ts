@@ -6,7 +6,11 @@ function onOpen() {
 }
 
 function showModalDialog() {
-  var html = HtmlService.createTemplateFromFile('index').evaluate();
+  var html = HtmlService
+              .createTemplateFromFile('index')
+              .evaluate()
+              .setWidth(800)
+              .setHeight(600);
   FormApp.getUi().showModalDialog(html, "設定");
 }
 

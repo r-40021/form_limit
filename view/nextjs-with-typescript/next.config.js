@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const withLinaria = require('next-linaria');
-module.exports = withLinaria({
-  reactStrictMode: true,
-  trailingSlash: true
-});
+module.exports = [
+  withLinaria({
+    reactStrictMode: true,
+    trailingSlash: true,
+  })
+];

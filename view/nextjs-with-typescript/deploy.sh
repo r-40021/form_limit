@@ -1,4 +1,11 @@
 #!/bin/sh
+
+# 既存のファイルを削除
+find gas -name "*.html" -type f | xargs rm
+
+# ビルド
+yarn deploy
+
 jsDirs=`find ./out -type f -and -name \*.js`
 htmlDirs=`find ./out -type f -and -name \*.html`
 cssDirs=`find ./out -type f -and -name \*.css`

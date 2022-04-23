@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "export": "next export",
+    "deploy": "next build && next export",
     "start": "next start",
     "lint": "next lint",
-    "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest"
+    "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
+    "push": "clasp push"
   },
   "dependencies": {
     "@emotion/cache": "latest",

@@ -15,7 +15,7 @@ import StepCard from '../src/createStepCard';
 import ChoiceList from '../src/choiceList';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import DoneIcon from '@mui/icons-material/Done';
+import DoneIcon from '@mui/icons-material/Done'
 
 
 
@@ -33,9 +33,8 @@ const Home: NextPage = () => {
   };
 
   const handleClickDoneButton = () => {
-    alert('Done!!');
+    google.script.host.close();
   }
-
   return (
       <Container maxWidth='lg'>
         <GlobalStyles styles={{ body: { backgroundColor: '#f1f1f1' } }} />
@@ -94,5 +93,6 @@ const Home: NextPage = () => {
   );
 };
 
+declare var google: any; // google.script 対策
 
 export default Home;
