@@ -4,6 +4,16 @@ htmlDirs=`find ./out -type f -and -name \*.html`
 cssDirs=`find ./out -type f -and -name \*.css`
 mkdir -p gas
 
+# JSコピー
+for jsDir in $jsDirs;
+do
+  fileName=`basename $jsDir`
+  newPath=./gas/${fileName}.html
+  scp $jsDir $newPath
+  sed -i -e "1s/^/<script>document.addEventListener('DOMContentLoaded', function () {/" ${newPath}
+  sed -i "\$a });</script>" ${newPath}
+done
+
 # HTML 書き換え
 
 for htmlDir in $htmlDirs;

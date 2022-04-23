@@ -7,7 +7,7 @@ function onOpen() {
 
 function showModalDialog() {
   var html = HtmlService.createTemplateFromFile('index').evaluate();
-  FormApp.getUi().showModalDialog(html, "CSVアップロード");
+  FormApp.getUi().showModalDialog(html, "設定");
 }
 
 export{}
