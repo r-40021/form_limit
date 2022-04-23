@@ -1,10 +1,13 @@
 #!/bin/sh
+echo "Start deploy"
 
 # 既存のファイルを削除
 find gas -name "*.html" -type f | xargs rm
 
 # ビルド
 yarn deploy
+
+echo "Optimized for GAS..."
 
 jsDirs=`find ./out -type f -and -name \*.js`
 htmlDirs=`find ./out -type f -and -name \*.html`
