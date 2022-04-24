@@ -16,30 +16,49 @@ import ChoiceList from '../src/choiceList';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import DoneIcon from '@mui/icons-material/Done';
-import { QuestionList, QuestionListItems } from '../src/interface';
+import { QuestionList, QuestionListItems, SaveData } from '../src/interface';
+import SettingSnackBar from '../src/SnackBar';
 
 
 
 const Home: NextPage = () => {
-  const baseQuestionList: QuestionListItems = {id: 0, title: 'フォーム全体', type: 'none', choices: ['フォーム全体']};
+  const baseQuestionList: QuestionListItems = { id: 0, title: 'フォーム全体', type: 'none', choices: ['フォーム全体'] };
 
-  const [question, selectQuestion] = React.useState<QuestionListItems>(baseQuestionList);
-  const [nowLimit, changeLimit] = React.useState('always');
+  const [question, selectQuestion] = React.useState<QuestionListItems>(baseQuestionList); // 現在選択中の設問
+  const [nowLimit, changeLimit] = React.useState('always'); // 残り枠数の表示条件
 
+  const saveData = React.useRef<SaveData>(); // GAS に送るデータ
+
+  /**
+   * STEP 1のプルダウンメニューがユーザーによって変更された時の処理
+   * @param {SelectChangeEvent<number>} event onchangeイベントのオブジェクト
+   */
   const handleChange = (event: SelectChangeEvent<number>): void => {
     selectQuestion(squeezedQuestionList.find((elem: QuestionListItems) => elem.id === event.target.value) || baseQuestionList);
   };
 
+  /**
+   * STEP 3のラジオボタンがユーザーによって変更された時の処理
+   * @param {SelectChangeEvent<string>} event onchangeイベントのオブジェクト
+   */
   const handleChangeRadio = (event: SelectChangeEvent<string>): void => {
     changeLimit(event.target.value);
   };
 
+  /**
+   * ｢適用｣ボタンが押されたときに、データをGASに送ってダイアログを閉じる関数
+   */
   const handleClickDoneButton = () => {
+    setOpen(true);
     google.script.host.close();
   }
 
-  const [squeezedQuestionList, setSqueezedQuestionList] = React.useState<Array<QuestionListItems>>([baseQuestionList]);
+  const [squeezedQuestionList, setSqueezedQuestionList] = React.useState<Array<QuestionListItems>>([baseQuestionList]); // 選択式に絞った設問リスト
 
+  /**
+   * 全設問のリストから、選択式の設問(＝定員が設定できる設問)を抽出する関数
+   * @param {QuestionList} questionList 全設問のリスト
+   */
   const squeezeQuestionList = (questionList: QuestionList) => {
     console.log(questionList);
     setSqueezedQuestionList(squeezedQuestionList.concat(questionList.items.filter((elem: QuestionListItems): Boolean => elem.choices.length > 0) || []));
@@ -47,7 +66,9 @@ const Home: NextPage = () => {
   React.useEffect(() => {
     google.script.run.withSuccessHandler(squeezeQuestionList).getQuestions();
   }, []);
-  
+
+  const [open, setOpen] = React.useState(false); // スナックバーが開いているかどうか
+
   return (
     <Container maxWidth='lg'>
       <GlobalStyles styles={{ body: { backgroundColor: '#f1f1f1' } }} />
@@ -72,7 +93,7 @@ const Home: NextPage = () => {
                 })
               }
             </Select>
-            <FormHelperText>選択肢ごとに定員を設ける場合は、該当する設問を選択します。<br />フォーム全体の回答数を制限する場合は、「このフォーム全体」を選択します。</FormHelperText>
+            <FormHelperText>選択肢ごとに定員を設ける場合は、該当する設問を選択します。<br />フォーム全体の回答数を制限する場合は、「フォーム全体」を選択します。</FormHelperText>
           </FormControl>
         } />
 
@@ -93,7 +114,7 @@ const Home: NextPage = () => {
               <TextField id='the-number' label='この枠数以下になったら表示' variant='filled' type='number' />
               : ''
             }
-            <FormControlLabel value='after0' control={<Radio />} label='残り枠数が0になるまで非表示' />
+            <FormControlLabel value='after0' control={<Radio />} label='常に非表示' />
           </RadioGroup>
         </FormControl>
       } />
@@ -102,10 +123,11 @@ const Home: NextPage = () => {
           variant="contained"
           startIcon={<DoneIcon />}
           onClick={handleClickDoneButton}>
-          適用して閉じる
+          適用
         </Button>
       </Box>
-    </Container>
+      <SettingSnackBar {...{open, setOpen}} />
+    </Container >
   );
 };
 

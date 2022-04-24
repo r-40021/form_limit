@@ -1,7 +1,7 @@
 function onOpen() {
   var ui = FormApp.getUi();
   var menu = ui.createMenu('定員制御');
-  menu.addItem('Modal', 'showModalDialog');
+  menu.addItem('設定', 'showModalDialog');
   menu.addToUi();
 }
 

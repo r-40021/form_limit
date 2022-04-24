@@ -7,6 +7,12 @@ type Props = {
 }
 
 export default function ChoiceList({ choiceList }: Props) {
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (parseInt(e.target.value) <= 0) {
+      e.target.value = '1';
+    }
+  }
+
   return (
     <Grid container spacing={2}>
       {
@@ -17,7 +23,7 @@ export default function ChoiceList({ choiceList }: Props) {
                 <p>{value}</p>
               </Grid>
               <Grid item sm={6} xs={12}>
-                <TextField id={'choice_' + value} label='定員' variant='filled' type='number' size='small' />
+                <TextField id={'choice_' + value} label='定員' variant='filled' type='number' size='small' onInput={handleInput} />
               </Grid>
             </React.Fragment>
           );

@@ -9,3 +9,14 @@ export interface QuestionListItems {
   type: string;
   choices: string[] | []
 }
+
+export interface SaveData {
+  id: number;
+  display: string;
+  limit: Array<LimitList>
+}
+
+export interface LimitList {
+  choiceTitle: string;
+  Limit: number
+}
