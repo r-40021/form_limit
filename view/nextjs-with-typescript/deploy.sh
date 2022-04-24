@@ -1,18 +1,18 @@
 #!/bin/sh
 echo "Start deploy"
 
-# 既存のファイルを削除
-find gas -name "*.html" -type f | xargs rm
-
 # ビルド
 yarn deploy
 
-echo "Optimized for GAS..."
+echo "Optimizing for GAS..."
 
 jsDirs=`find ./out -type f -and -name \*.js`
 htmlDirs=`find ./out -type f -and -name \*.html`
 cssDirs=`find ./out -type f -and -name \*.css`
 mkdir -p gas
+
+# 既存のファイルを削除
+find gas -name "*.html" -type f | xargs rm
 
 # JSコピー
 for jsDir in $jsDirs;

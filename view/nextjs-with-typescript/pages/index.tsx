@@ -15,17 +15,19 @@ import StepCard from '../src/createStepCard';
 import ChoiceList from '../src/choiceList';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import DoneIcon from '@mui/icons-material/Done'
+import DoneIcon from '@mui/icons-material/Done';
+import { QuestionList, QuestionListItems } from '../src/interface';
 
 
 
 const Home: NextPage = () => {
+  const baseQuestionList: QuestionListItems = {id: 0, title: 'フォーム全体', type: 'none', choices: ['フォーム全体']};
 
-  const [question, selectQuestion] = React.useState(0);
+  const [question, selectQuestion] = React.useState<QuestionListItems>(baseQuestionList);
   const [nowLimit, changeLimit] = React.useState('always');
 
   const handleChange = (event: SelectChangeEvent<number>): void => {
-    selectQuestion(event.target.value as number);
+    selectQuestion(squeezedQuestionList.find((elem: QuestionListItems) => elem.id === event.target.value) || baseQuestionList);
   };
 
   const handleChangeRadio = (event: SelectChangeEvent<string>): void => {
@@ -35,61 +37,75 @@ const Home: NextPage = () => {
   const handleClickDoneButton = () => {
     google.script.host.close();
   }
+
+  const [squeezedQuestionList, setSqueezedQuestionList] = React.useState<Array<QuestionListItems>>([baseQuestionList]);
+
+  const squeezeQuestionList = (questionList: QuestionList) => {
+    console.log(questionList);
+    setSqueezedQuestionList(squeezedQuestionList.concat(questionList.items.filter((elem: QuestionListItems): Boolean => elem.choices.length > 0) || []));
+  }
+  React.useEffect(() => {
+    google.script.run.withSuccessHandler(squeezeQuestionList).getQuestions();
+  }, []);
+  
   return (
-      <Container maxWidth='lg'>
-        <GlobalStyles styles={{ body: { backgroundColor: '#f1f1f1' } }} />
-        <StepCard
-          step={1}
-          title='定員を設ける対象を選ぶ'
-          cardContent=
-          {
-            <FormControl variant='filled'>
-              <InputLabel id='question-label'>対象</InputLabel>
-              <Select
-                labelId='question-label'
-                id='select-question'
-                value={question}
-                onChange={handleChange}
-              >
-                <MenuItem value={0}>このフォーム全体</MenuItem>
-                <MenuItem value={1}>1. お名前</MenuItem>
-                <MenuItem value={2}>2. 時間帯</MenuItem>
-                <MenuItem value={3}>3. 人数</MenuItem>
-              </Select>
-              <FormHelperText>選択肢ごとに定員を設ける場合は、該当する設問を選択します。<br />フォーム全体の回答数を制限する場合は、「このフォーム全体」を選択します。</FormHelperText>
-            </FormControl>
-          } />
-
-        <StepCard step={2} title='定員を設定する' cardContent={
-          <ChoiceList choiceList={['13~14時', '14~15時', '15~16時', '16~17時', '17~18時']} />
-        } />
-
-        <StepCard step={3} title='残り枠数の表示条件を設定する' cardContent={
-          <FormControl>
-            <RadioGroup
-              defaultValue='always'
-              name='conditions-for-displaying-the number'
-              onChange={handleChangeRadio}
+    <Container maxWidth='lg'>
+      <GlobalStyles styles={{ body: { backgroundColor: '#f1f1f1' } }} />
+      <StepCard
+        step={1}
+        title='定員を設ける対象を選ぶ'
+        cardContent=
+        {
+          <FormControl variant='filled'>
+            <InputLabel id='question-label'>対象</InputLabel>
+            <Select
+              labelId='question-label'
+              id='select-question'
+              value={question.id}
+              onChange={handleChange}
             >
-              <FormControlLabel value='always' control={<Radio />} label='常に表示' />
-              <FormControlLabel value='controlled' control={<Radio />} label='一定枠数以下になったら表示' />
-              {nowLimit === 'controlled' ?
-                <TextField id='the-number' label='この枠数以下になったら表示' variant='filled' type='number' />
-                : ''
+              {
+                squeezedQuestionList.map((value) => {
+                  return (
+                    <MenuItem value={value.id} key={value.id}>{value.title}</MenuItem>
+                  )
+                })
               }
-              <FormControlLabel value='after0' control={<Radio />} label='残り枠数が0になるまで非表示' />
-            </RadioGroup>
+            </Select>
+            <FormHelperText>選択肢ごとに定員を設ける場合は、該当する設問を選択します。<br />フォーム全体の回答数を制限する場合は、「このフォーム全体」を選択します。</FormHelperText>
           </FormControl>
         } />
-        <Box sx={{ pb: 3, textAlign: 'right' }}>
-          <Button
-            variant="contained"
-            startIcon={<DoneIcon />}
-            onClick={handleClickDoneButton}>
-            適用して閉じる
-          </Button>
-        </Box>
-      </Container>
+
+      <StepCard step={2} title='定員を設定する' cardContent={
+        <ChoiceList choiceList={question.choices} />
+      } />
+
+      <StepCard step={3} title='残り枠数の表示条件を設定する' cardContent={
+        <FormControl>
+          <RadioGroup
+            defaultValue='always'
+            name='conditions-for-displaying-the number'
+            onChange={handleChangeRadio}
+          >
+            <FormControlLabel value='always' control={<Radio />} label='常に表示' />
+            <FormControlLabel value='controlled' control={<Radio />} label='一定枠数以下になったら表示' />
+            {nowLimit === 'controlled' ?
+              <TextField id='the-number' label='この枠数以下になったら表示' variant='filled' type='number' />
+              : ''
+            }
+            <FormControlLabel value='after0' control={<Radio />} label='残り枠数が0になるまで非表示' />
+          </RadioGroup>
+        </FormControl>
+      } />
+      <Box sx={{ pb: 3, textAlign: 'right' }}>
+        <Button
+          variant="contained"
+          startIcon={<DoneIcon />}
+          onClick={handleClickDoneButton}>
+          適用して閉じる
+        </Button>
+      </Box>
+    </Container>
   );
 };
 

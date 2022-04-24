@@ -6,6 +6,7 @@ services:
     tty: true
     volumes:
       - ./nextjs-with-typescript:/usr/app
+      - ./home/:${HOME}
     command: sh -c "yarn dev"
     ports:
       - "3000:3000"

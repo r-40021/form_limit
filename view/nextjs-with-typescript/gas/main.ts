@@ -5,6 +5,9 @@ function onOpen() {
   menu.addToUi();
 }
 
+/**
+ * 設定画面のダイアログを表示する関数
+ */
 function showModalDialog() {
   var html = HtmlService
     .createTemplateFromFile('index')
@@ -30,13 +33,15 @@ interface Form {
   id: string;
   items: Array<AnswerItem | QuestionItem>;
 }
-const getItem = item => {
+
+/**
+ * 設問の選択肢を取得する関数
+ * @param {GoogleAppsScript.Forms.Item} item 設問のオブジェクト 
+ * @returns {GoogleAppsScript.Forms.MultipleChoiceItem | GoogleAppsScript.Forms.ListItem | GoogleAppsScript.Forms.CheckboxItem | {}} 選択肢が入ったオブジェクト
+ */
+const getItem = (item: GoogleAppsScript.Forms.Item) :any => {
   const itemType = item.getType();
   switch (itemType) {
-    case FormApp.ItemType.TEXT:
-      return item.asTextItem();
-    case FormApp.ItemType.PARAGRAPH_TEXT:
-      return item.asParagraphTextItem();
     case FormApp.ItemType.MULTIPLE_CHOICE:
       return item.asMultipleChoiceItem();
     case FormApp.ItemType.LIST:
@@ -50,13 +55,18 @@ const getItem = item => {
 
 /**
  * 設問の選択肢を取得する関数
- * @param item 
- * @returns 
+ * @param {GoogleAppsScript.Forms.Item} item 設問のオブジェクト
+ * @returns {Object} 選択肢が入ったオブジェクト
  */
-const getChoices = item =>
-  getItem(item).getChoices ? getItem(item).getChoices() : [];
+const getChoices = (item: GoogleAppsScript.Forms.Item): [] =>
+  'getChoices' in getItem(item) ? getItem(item).getChoices() : [];
 
-function getQuestions() {
+
+/**
+ * 設問の一覧を返す関数
+ * @returns {Form} 設問の一覧のJSON
+ */
+function getQuestions(): Form {
   const form = FormApp.getActiveForm();
   const items = form.getItems();
   const result: Form = { id: form.getId(), items: [] };
@@ -66,13 +76,12 @@ function getQuestions() {
       id: item.getId(),
       title: item.getTitle(),
       type: String(item.getType()),
-      choices: getChoices(item).map(c => c.getValue())
+      choices: getChoices(item).map((c: any) => c.getValue())
     };
     result.items.push(myItem);
   }
-  Logger.log(ContentService.createTextOutput(JSON.stringify(result)).setMimeType(
-    ContentService.MimeType.JSON)
-  );
+  console.log(result)
+  return result;
 }
 
 export { }
