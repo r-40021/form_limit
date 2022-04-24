@@ -21,7 +21,7 @@ export default function ChoiceList({ choiceList }: Props) {
   return (
     <div>
       <FormHelperText>1以上の整数を入力してください。<br />定員を無制限にする場合は、空欄にしてください。</FormHelperText>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} mt={2}>
         {
           choiceList.map((value: string | number) => {
             return (
