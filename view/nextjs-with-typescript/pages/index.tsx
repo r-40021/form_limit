@@ -16,7 +16,7 @@ import ChoiceList from '../src/choiceList';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import DoneIcon from '@mui/icons-material/Done';
-import { QuestionList, QuestionListItems, SaveData } from '../src/interface';
+import { LimitList, QuestionList, QuestionListItems, SaveData } from '../src/interface';
 import SettingSnackBar from '../src/SnackBar';
 
 
@@ -25,9 +25,10 @@ const Home: NextPage = () => {
   const baseQuestionList: QuestionListItems = { id: 0, title: 'フォーム全体', type: 'none', choices: ['フォーム全体'] };
 
   const [question, selectQuestion] = React.useState<QuestionListItems>(baseQuestionList); // 現在選択中の設問
-  const [nowLimit, changeLimit] = React.useState('always'); // 残り枠数の表示条件
+  const [nowLimit, changeLimit] = React.useState<string>('always'); // 残り枠数の表示条件
 
   const saveData = React.useRef<SaveData>(); // GAS に送るデータ
+  const saveLimitData = React.useRef<LimitList>({}); // GAS に送る定員のデータ
 
   /**
    * STEP 1のプルダウンメニューがユーザーによって変更された時の処理
@@ -50,6 +51,13 @@ const Home: NextPage = () => {
    */
   const handleClickDoneButton = () => {
     setOpen(true);
+    saveData.current = {
+      id: question.id,
+      display: nowLimit,
+      limit: saveLimitData.current
+    };
+    console.log(saveData.current);
+    console.log(saveData.current.limit);
     google.script.host.close();
   }
 
@@ -63,6 +71,23 @@ const Home: NextPage = () => {
     console.log(questionList);
     setSqueezedQuestionList(squeezedQuestionList.concat(questionList.items.filter((elem: QuestionListItems): Boolean => elem.choices.length > 0) || []));
   }
+
+  /**
+   * 残り枠数の表示条件のテキストボックスからフォーカスを外れた際に、数値の検証＆保存をする関数
+   * @param {React.FocusEvent<HTMLInputElement>} e blurイベントの引数
+   */
+  const handleBlurLimit = (e: React.FocusEvent<HTMLInputElement>) => {
+    const value: number = parseInt(e.target.value);
+    if (value < 1) {
+      e.target.value = '1';
+    }
+    if (/\./.test(e.target.value)) {
+      e.target.value = Math.floor(value).toString();
+    }
+    changeLimit('controlled_' + e.target.value);
+    console.log(nowLimit)
+  }
+
   React.useEffect(() => {
     google.script.run.withSuccessHandler(squeezeQuestionList).getQuestions();
   }, []);
@@ -98,7 +123,7 @@ const Home: NextPage = () => {
         } />
 
       <StepCard step={2} title='定員を設定する' cardContent={
-          <ChoiceList choiceList={question.choices} />
+        <ChoiceList choiceList={question.choices} {...{ saveLimitData }} />
       } />
 
       <StepCard step={3} title='残り枠数の表示条件を設定する' cardContent={
@@ -110,8 +135,8 @@ const Home: NextPage = () => {
           >
             <FormControlLabel value='always' control={<Radio />} label='常に表示' />
             <FormControlLabel value='controlled' control={<Radio />} label='一定枠数以下になったら表示' />
-            {nowLimit === 'controlled' ?
-              <TextField id='the-number' label='この枠数以下になったら表示' variant='filled' type='number' />
+            {/^controlled/.test(nowLimit) ?
+              <TextField id='the-number' label='この枠数以下になったら表示' variant='filled' type='number' onBlur={handleBlurLimit} />
               : ''
             }
             <FormControlLabel value='after0' control={<Radio />} label='常に非表示' />

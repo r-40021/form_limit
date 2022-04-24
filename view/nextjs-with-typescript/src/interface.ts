@@ -12,11 +12,10 @@ export interface QuestionListItems {
 
 export interface SaveData {
   id: number;
-  display: string;
-  limit: Array<LimitList>
+  display: string | number;
+  limit: LimitList;
 }
 
 export interface LimitList {
-  choiceTitle: string;
-  Limit: number
+  [key: string]: number
 }
