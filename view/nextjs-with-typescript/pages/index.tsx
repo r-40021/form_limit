@@ -56,9 +56,10 @@ const Home: NextPage = () => {
       display: nowLimit,
       limit: saveLimitData.current
     };
-    console.log(saveData.current);
-    console.log(saveData.current.limit);
-    google.script.host.close();
+    google.script.run.withSuccessHandler(() => {
+      console.log(saveData.current);
+      google.script.host.close();
+    }).saveData(saveData.current);
   }
 
   const [squeezedQuestionList, setSqueezedQuestionList] = React.useState<Array<QuestionListItems>>([baseQuestionList]); // 選択式に絞った設問リスト

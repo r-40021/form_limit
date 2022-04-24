@@ -1,3 +1,5 @@
+import { SaveData } from '../src/interface';
+
 function onOpen() {
   var ui = FormApp.getUi();
   var menu = ui.createMenu('定員制御');
@@ -82,6 +84,14 @@ function getQuestions(): Form {
   }
   console.log(result)
   return result;
+}
+
+function saveData(data: SaveData) {
+  PropertiesService.getScriptProperties().setProperty('data', JSON.stringify(data));
+}
+
+function getSaveData(): SaveData {
+  return JSON.parse(PropertiesService.getScriptProperties().getProperty('data') || '{}');
 }
 
 export { }
