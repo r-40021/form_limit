@@ -98,7 +98,7 @@ const Home: NextPage = () => {
         } />
 
       <StepCard step={2} title='定員を設定する' cardContent={
-        <ChoiceList choiceList={question.choices} />
+          <ChoiceList choiceList={question.choices} />
       } />
 
       <StepCard step={3} title='残り枠数の表示条件を設定する' cardContent={
@@ -126,7 +126,7 @@ const Home: NextPage = () => {
           適用
         </Button>
       </Box>
-      <SettingSnackBar {...{open, setOpen}} />
+      <SettingSnackBar {...{ open, setOpen }} />
     </Container >
   );
 };
