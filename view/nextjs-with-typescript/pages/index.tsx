@@ -16,7 +16,7 @@ import ChoiceList from '../src/choiceList';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import DoneIcon from '@mui/icons-material/Done';
-import { LimitList, QuestionList, QuestionListItems, SaveData } from '../src/interface';
+import { LimitList, QuestionList, QuestionListItems, SaveData, TmpLimitData } from '../src/interface';
 import SettingSnackBar from '../src/SnackBar';
 
 
@@ -26,6 +26,8 @@ const Home: NextPage = () => {
 
   const [question, selectQuestion] = React.useState<QuestionListItems>(baseQuestionList); // 現在選択中の設問
   const [nowLimit, changeLimit] = React.useState<string>('always'); // 残り枠数の表示条件
+
+  const [tmpLimitData, updateTempLimitData] = React.useState<TmpLimitData>({});
 
   const saveData = React.useRef<SaveData>(); // GAS に送るデータ
   const saveLimitData = React.useRef<LimitList>({}); // GAS に送る定員のデータ
@@ -124,7 +126,7 @@ const Home: NextPage = () => {
         } />
 
       <StepCard step={2} title='定員を設定する' cardContent={
-        <ChoiceList choiceList={question.choices} {...{ saveLimitData }} />
+        <ChoiceList choiceList={question.choices} {...{ saveLimitData, question, tmpLimitData, updateTempLimitData }} />
       } />
 
       <StepCard step={3} title='残り枠数の表示条件を設定する' cardContent={
