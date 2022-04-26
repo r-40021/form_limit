@@ -16,7 +16,7 @@ import ChoiceList from '../src/choiceList';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import DoneIcon from '@mui/icons-material/Done';
-import { LimitList, QuestionList, QuestionListItems, SaveData, TmpLimitData } from '../src/interface';
+import { QuestionList, QuestionListItems, SaveData, TmpLimitData } from '../src/interface';
 import SettingSnackBar from '../src/SnackBar';
 
 
@@ -30,6 +30,8 @@ const Home: NextPage = () => {
   const [tmpLimitData, updateTempLimitData] = React.useState<TmpLimitData>({});
 
   const saveData = React.useRef<SaveData>(); // GAS に送るデータ
+
+  const [squeezedQuestionList, setSqueezedQuestionList] = React.useState<Array<QuestionListItems>>([baseQuestionList]); // 選択式に絞った設問リスト
 
   /**
    * STEP 1のプルダウンメニューがユーザーによって変更された時の処理
@@ -62,14 +64,25 @@ const Home: NextPage = () => {
     }).saveData(saveData.current);
   }
 
-  const [squeezedQuestionList, setSqueezedQuestionList] = React.useState<Array<QuestionListItems>>([baseQuestionList]); // 選択式に絞った設問リスト
-
   /**
    * 全設問のリストから、選択式の設問(＝定員が設定できる設問)を抽出する関数
    * @param {QuestionList} questionList 全設問のリスト
    */
   const squeezeQuestionList = (questionList: QuestionList) => {
     setSqueezedQuestionList(squeezedQuestionList.concat(questionList.items.filter((elem: QuestionListItems): Boolean => elem.choices.length > 0) || []));
+  }
+
+  /**
+   * GAS用のセーブデータを、プログラムで使いやすいようにいくつかの変数に分割する関数
+   * @param {SaveData} data GASに保存していたセーブデータのJSON
+   */
+  const splitSaveData = (data: SaveData) => {
+    selectQuestion(squeezedQuestionList.find(elem => elem.id === data.id) || baseQuestionList);
+    changeLimit(data.display);
+    let limitData: TmpLimitData = {};
+    limitData[data.id] = data.limit;
+    updateTempLimitData(limitData);
+    setOpenforPre(false);
   }
 
   /**
@@ -88,10 +101,13 @@ const Home: NextPage = () => {
   }
 
   React.useEffect(() => {
+    setOpenforPre(true);
     google.script.run.withSuccessHandler(squeezeQuestionList).getQuestions();
+    google.script.run.withSuccessHandler(splitSaveData).getSaveData();
   }, []);
 
   const [open, setOpen] = React.useState(false); // スナックバーが開いているかどうか
+  const [openforPre, setOpenforPre] = React.useState(false); // 準備中のスナックバーが開いているかどうか
 
   return (
     <Container maxWidth='lg'>
@@ -128,7 +144,7 @@ const Home: NextPage = () => {
       <StepCard step={3} title='残り枠数の表示条件を設定する' cardContent={
         <FormControl>
           <RadioGroup
-            defaultValue='always'
+            value={nowLimit}
             name='conditions-for-displaying-the number'
             onChange={handleChangeRadio}
           >
@@ -150,7 +166,8 @@ const Home: NextPage = () => {
           適用
         </Button>
       </Box>
-      <SettingSnackBar {...{ open, setOpen }} />
+      <SettingSnackBar open={openforPre} setOpen={setOpenforPre} message='読み込んでいます…' />
+      <SettingSnackBar {...{ open, setOpen }} message='設定しています…' />
     </Container >
   );
 };

@@ -4,9 +4,10 @@ import Snackbar from "@mui/material/Snackbar";
 type Props = {
   open: boolean | undefined;
   setOpen: Function;
+  message: string;
 }
 
-export default function SettingSnackBar({open, setOpen}: Props) {
+export default function SettingSnackBar({open, setOpen, message}: Props) {
   const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -19,7 +20,7 @@ export default function SettingSnackBar({open, setOpen}: Props) {
     <Snackbar
       open={open}
       onClose={handleClose}
-      message="設定しています…"
+      message={message}
     />
   );
 }

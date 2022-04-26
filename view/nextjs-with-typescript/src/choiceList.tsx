@@ -13,22 +13,14 @@ type Props = {
 }
 
 export default function ChoiceList({ choiceList, question, tmpLimitData, updateTempLimitData }: Props) {
-
-  /**
-   * テキストボックスからフォーカスが外れた際の処理を行う関数
-   * @param {React.FocusEvent<HTMLInputElement>} e イベントの引数 
-   */
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.value = checkInputNum(e);
-  }
-
   /**
    * 一時的な保存データを更新する関数
-   * @param {React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>} e イベントの引数
+   * @param {React.FocusEvent<HTMLInputElement>} e イベントの引数
    */
-  const updateTmpData = (e: React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>) => {
+  const updateTmpData = (e: React.FocusEvent<HTMLInputElement>) => {
     const choice: string = e.target.id.replace('choice_', '');
     const inputNum = checkInputNum(e);
+    e.target.value = inputNum;
 
     let tmpLimit: TmpLimitData = tmpLimitData;
     if (tmpLimit[question.id]) {
@@ -43,10 +35,10 @@ export default function ChoiceList({ choiceList, question, tmpLimitData, updateT
 
   /**
    * テキストボックスに入力された内容に関して、それが適切なものであるかを検証し、必要に応じて正しい形式に直して返す関数。
-   * @param {React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>} e イベントの引数 
+   * @param {React.FocusEvent<HTMLInputElement>} e イベントの引数 
    * @returns {string} 整形後の文字列。必要に応じて元のテキストボックスに代入すると良い。
    */
-  const checkInputNum = (e: React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>): string => {
+  const checkInputNum = (e: React.FocusEvent<HTMLInputElement>): string => {
     const value: number = parseInt(e.target.value);
     if (value < 1) {
       return '1';
@@ -70,7 +62,7 @@ export default function ChoiceList({ choiceList, question, tmpLimitData, updateT
                   <p>{choiceTitle}</p>
                 </Grid>
                 <Grid item sm={6} xs={12}>
-                  <TextField id={'choice_' + choiceTitle} label='定員' variant='filled' type='number' size='small' defaultValue={tmpLimitData[question.id] ? tmpLimitData[question.id][choiceTitle] : ''} onBlur={handleBlur} onChange={updateTmpData} />
+                  <TextField id={'choice_' + choiceTitle} label='定員' variant='filled' type='number' size='small' defaultValue={tmpLimitData[question.id] ? tmpLimitData[question.id][choiceTitle] : ''} onBlur={updateTmpData} />
                 </Grid>
               </React.Fragment>
             );
