@@ -30,7 +30,6 @@ const Home: NextPage = () => {
   const [tmpLimitData, updateTempLimitData] = React.useState<TmpLimitData>({});
 
   const saveData = React.useRef<SaveData>(); // GAS に送るデータ
-  const saveLimitData = React.useRef<LimitList>({}); // GAS に送る定員のデータ
 
   /**
    * STEP 1のプルダウンメニューがユーザーによって変更された時の処理
@@ -56,10 +55,9 @@ const Home: NextPage = () => {
     saveData.current = {
       id: question.id,
       display: nowLimit,
-      limit: saveLimitData.current
+      limit: tmpLimitData[question.id]
     };
     google.script.run.withSuccessHandler(() => {
-      console.log(saveData.current);
       google.script.host.close();
     }).saveData(saveData.current);
   }
@@ -71,7 +69,6 @@ const Home: NextPage = () => {
    * @param {QuestionList} questionList 全設問のリスト
    */
   const squeezeQuestionList = (questionList: QuestionList) => {
-    console.log(questionList);
     setSqueezedQuestionList(squeezedQuestionList.concat(questionList.items.filter((elem: QuestionListItems): Boolean => elem.choices.length > 0) || []));
   }
 
@@ -88,7 +85,6 @@ const Home: NextPage = () => {
       e.target.value = Math.floor(value).toString();
     }
     changeLimit('controlled_' + e.target.value);
-    console.log(nowLimit)
   }
 
   React.useEffect(() => {
@@ -126,7 +122,7 @@ const Home: NextPage = () => {
         } />
 
       <StepCard step={2} title='定員を設定する' cardContent={
-        <ChoiceList choiceList={question.choices} {...{ saveLimitData, question, tmpLimitData, updateTempLimitData }} />
+        <ChoiceList choiceList={question.choices} {...{ question, tmpLimitData, updateTempLimitData }} />
       } />
 
       <StepCard step={3} title='残り枠数の表示条件を設定する' cardContent={

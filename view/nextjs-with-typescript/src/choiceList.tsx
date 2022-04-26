@@ -7,39 +7,54 @@ import trimChoiceText from './trimText';
 
 type Props = {
   choiceList: string[] | number[];
-  saveLimitData: React.MutableRefObject<LimitList>;
   question: QuestionListItems;
   tmpLimitData: TmpLimitData;
   updateTempLimitData: React.Dispatch<React.SetStateAction<TmpLimitData>>;
 }
 
-export default function ChoiceList({ choiceList, saveLimitData, question, tmpLimitData, updateTempLimitData }: Props) {
+export default function ChoiceList({ choiceList, question, tmpLimitData, updateTempLimitData }: Props) {
 
   /**
-   * 入力された値が自然数か調べ、必要に応じて訂正する関数
+   * テキストボックスからフォーカスが外れた際の処理を行う関数
    * @param {React.FocusEvent<HTMLInputElement>} e イベントの引数 
    */
-  const checkNonnegativeInteger = (e: React.FocusEvent<HTMLInputElement>) => {
-    const value: number = parseInt(e.target.value);
-    if (value < 1) {
-      e.target.value = '1';
-    }
-    if (/\./.test(e.target.value)) {
-      e.target.value = Math.floor(value).toString();
-    }
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.value = checkInputNum(e);
+  }
 
+  /**
+   * 一時的な保存データを更新する関数
+   * @param {React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>} e イベントの引数
+   */
+  const updateTmpData = (e: React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>) => {
     const choice: string = e.target.id.replace('choice_', '');
-    saveLimitData.current[choice] = parseInt(e.target.value);
-    
+    const inputNum = checkInputNum(e);
+
     let tmpLimit: TmpLimitData = tmpLimitData;
     if (tmpLimit[question.id]) {
-      tmpLimit[question.id][choice] = parseInt(e.target.value);
+      tmpLimit[question.id][choice] = parseInt(inputNum);
     } else {
       let childrenData: LimitList = {};
-      childrenData[choice] = parseInt(e.target.value);
+      childrenData[choice] = parseInt(inputNum);
       tmpLimit[question.id] = childrenData;
     }
     updateTempLimitData(tmpLimit);
+  };
+
+  /**
+   * テキストボックスに入力された内容に関して、それが適切なものであるかを検証し、必要に応じて正しい形式に直して返す関数。
+   * @param {React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>} e イベントの引数 
+   * @returns {string} 整形後の文字列。必要に応じて元のテキストボックスに代入すると良い。
+   */
+  const checkInputNum = (e: React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>): string => {
+    const value: number = parseInt(e.target.value);
+    if (value < 1) {
+      return '1';
+    }
+    if (/\./.test(e.target.value)) {
+      return Math.floor(value).toString();
+    }
+    return e.target.value;
   }
 
   return (
@@ -55,7 +70,7 @@ export default function ChoiceList({ choiceList, saveLimitData, question, tmpLim
                   <p>{choiceTitle}</p>
                 </Grid>
                 <Grid item sm={6} xs={12}>
-                  <TextField id={'choice_' + choiceTitle} label='定員' variant='filled' type='number' size='small' value={tmpLimitData[question.id] ? tmpLimitData[question.id][choiceTitle] : ''} onBlur={checkNonnegativeInteger} />
+                  <TextField id={'choice_' + choiceTitle} label='定員' variant='filled' type='number' size='small' defaultValue={tmpLimitData[question.id] ? tmpLimitData[question.id][choiceTitle] : ''} onBlur={handleBlur} onChange={updateTmpData} />
                 </Grid>
               </React.Fragment>
             );
