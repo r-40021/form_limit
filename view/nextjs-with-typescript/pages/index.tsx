@@ -77,11 +77,13 @@ const Home: NextPage = () => {
    * @param {SaveData} data GASに保存していたセーブデータのJSON
    */
   const splitSaveData = (data: SaveData) => {
+    console.log(squeezedQuestionList);
     selectQuestion(squeezedQuestionList.find(elem => elem.id === data.id) || baseQuestionList);
     changeLimit(data.display);
     let limitData: TmpLimitData = {};
     limitData[data.id] = data.limit;
     updateTempLimitData(limitData);
+    console.log(openforPre)
     setOpenforPre(false);
   }
 
@@ -114,7 +116,7 @@ const Home: NextPage = () => {
       <GlobalStyles styles={{ body: { backgroundColor: '#f1f1f1' } }} />
       <StepCard
         step={1}
-        title='定員を設ける対象を選ぶ'
+        title='定員を設ける対象を選択'
         cardContent=
         {
           <FormControl variant='filled'>
@@ -137,24 +139,24 @@ const Home: NextPage = () => {
           </FormControl>
         } />
 
-      <StepCard step={2} title='定員を設定する' cardContent={
+      <StepCard step={2} title='定員を設定' cardContent={
         <ChoiceList choiceList={question.choices} {...{ question, tmpLimitData, updateTempLimitData }} />
       } />
 
-      <StepCard step={3} title='残り枠数の表示条件を設定する' cardContent={
+      <StepCard step={3} title='残り枠数の表示条件を設定' cardContent={
         <FormControl>
           <RadioGroup
-            value={nowLimit}
+            value={nowLimit.split('_')[0]}
             name='conditions-for-displaying-the number'
             onChange={handleChangeRadio}
           >
             <FormControlLabel value='always' control={<Radio />} label='常に表示' />
             <FormControlLabel value='controlled' control={<Radio />} label='一定枠数以下になったら表示' />
             {/^controlled/.test(nowLimit) ?
-              <TextField id='the-number' label='この枠数以下になったら表示' variant='filled' type='number' onBlur={handleBlurLimit} />
+              <TextField id='the-number' label='この枠数以下になったら表示' variant='filled' type='number' defaultValue={/\_/.test(nowLimit) ? nowLimit.split('_')[1] : ''} onBlur={handleBlurLimit} />
               : ''
             }
-            <FormControlLabel value='after0' control={<Radio />} label='常に非表示' />
+            <FormControlLabel value='never' control={<Radio />} label='常に非表示' />
           </RadioGroup>
         </FormControl>
       } />
