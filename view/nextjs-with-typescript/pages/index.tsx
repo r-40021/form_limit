@@ -22,16 +22,25 @@ import SettingSnackBar from '../src/SnackBar';
 
 
 const Home: NextPage = () => {
-  const baseQuestionList: QuestionListItems = { id: 0, title: 'フォーム全体', type: 'none', choices: ['フォーム全体'] };
-
+  /* 設問リスト関連 */
+  const baseQuestionList: QuestionListItems = { id: 0, title: 'フォーム全体', type: 'none', choices: ['フォーム全体'] }; //設問リストの初期値
   const [question, selectQuestion] = React.useState<QuestionListItems>(baseQuestionList); // 現在選択中の設問
-  const [nowLimit, changeLimit] = React.useState<string>('always'); // 残り枠数の表示条件
+  const [squeezedQuestionList, setSqueezedQuestionList] = React.useState<Array<QuestionListItems>>([baseQuestionList]); // 選択式に絞った設問リスト
+  const tmpQuestionID = React.useRef<number>(); //セーブデータから読み取った選択中の設問のID
 
+  /* 選択肢ごとの定員 */
   const [tmpLimitData, updateTempLimitData] = React.useState<TmpLimitData>({});
 
+  /* 残り枠数の表示条件関連 */
+  const [nowLimit, changeLimit] = React.useState<string>('always'); // 残り枠数の表示条件
+  const defaultControlledNum = React.useRef<Number>();
+
+  /* GAS用 */
   const saveData = React.useRef<SaveData>(); // GAS に送るデータ
 
-  const [squeezedQuestionList, setSqueezedQuestionList] = React.useState<Array<QuestionListItems>>([baseQuestionList]); // 選択式に絞った設問リスト
+  /* スナックバー関連 */
+  const [openSaving, setOpenSaving] = React.useState(false); // スナックバーが開いているかどうか
+  const [openforPre, setOpenforPre] = React.useState(false); // 準備中のスナックバーが開いているかどうか
 
   /**
    * STEP 1のプルダウンメニューがユーザーによって変更された時の処理
@@ -46,17 +55,23 @@ const Home: NextPage = () => {
    * @param {SelectChangeEvent<string>} event onchangeイベントのオブジェクト
    */
   const handleChangeRadio = (event: SelectChangeEvent<string>): void => {
-    changeLimit(event.target.value);
+    if (/^controlled/.test(event.target.value) && defaultControlledNum.current) {
+      changeLimit('controlled_' + defaultControlledNum.current);
+    } else {
+      changeLimit(event.target.value);
+    }
   };
 
   /**
    * ｢適用｣ボタンが押されたときに、データをGASに送ってダイアログを閉じる関数
    */
   const handleClickDoneButton = () => {
-    setOpen(true);
+    setOpenSaving(true);
+    let limit = nowLimit;
+    if (/^controlled/.test(nowLimit) && !defaultControlledNum) limit = 'always';
     saveData.current = {
       id: question.id,
-      display: nowLimit,
+      display: limit,
       limit: tmpLimitData[question.id]
     };
     google.script.run.withSuccessHandler(() => {
@@ -69,7 +84,10 @@ const Home: NextPage = () => {
    * @param {QuestionList} questionList 全設問のリスト
    */
   const squeezeQuestionList = (questionList: QuestionList) => {
-    setSqueezedQuestionList(squeezedQuestionList.concat(questionList.items.filter((elem: QuestionListItems): Boolean => elem.choices.length > 0) || []));
+    const newSqueezedQuestionList = squeezedQuestionList.concat(questionList.items.filter((elem: QuestionListItems): Boolean => elem.choices.length > 0) || []);
+    setSqueezedQuestionList(newSqueezedQuestionList);
+    if (tmpQuestionID.current) selectQuestion(newSqueezedQuestionList.find(elem => elem.id === tmpQuestionID.current) || baseQuestionList);
+    setOpenforPre(false);
   }
 
   /**
@@ -77,14 +95,21 @@ const Home: NextPage = () => {
    * @param {SaveData} data GASに保存していたセーブデータのJSON
    */
   const splitSaveData = (data: SaveData) => {
-    console.log(squeezedQuestionList);
-    selectQuestion(squeezedQuestionList.find(elem => elem.id === data.id) || baseQuestionList);
-    changeLimit(data.display);
+    const questionItem = squeezedQuestionList.find(elem => elem.id === data.id);
+    if (questionItem) {
+      selectQuestion(questionItem);
+    } else {
+      selectQuestion(baseQuestionList);
+      tmpQuestionID.current = data.id;
+    }
+    let limit = data.display;
+    const limitNum = data.display.split('_')[1];
+    if (/^controlled/.test(data.display) && !limitNum) limit = 'always';
+    changeLimit(limit);
+    if (/^controlled/.test(data.display) && limitNum) defaultControlledNum.current = parseInt(limitNum);
     let limitData: TmpLimitData = {};
     limitData[data.id] = data.limit;
     updateTempLimitData(limitData);
-    console.log(openforPre)
-    setOpenforPre(false);
   }
 
   /**
@@ -100,16 +125,14 @@ const Home: NextPage = () => {
       e.target.value = Math.floor(value).toString();
     }
     changeLimit('controlled_' + e.target.value);
+    defaultControlledNum.current = parseInt(e.target.value);
   }
 
   React.useEffect(() => {
-    setOpenforPre(true);
+    setOpenforPre(true); // ｢読み込んでいます…｣を表示
     google.script.run.withSuccessHandler(squeezeQuestionList).getQuestions();
     google.script.run.withSuccessHandler(splitSaveData).getSaveData();
   }, []);
-
-  const [open, setOpen] = React.useState(false); // スナックバーが開いているかどうか
-  const [openforPre, setOpenforPre] = React.useState(false); // 準備中のスナックバーが開いているかどうか
 
   return (
     <Container maxWidth='lg'>
@@ -153,7 +176,7 @@ const Home: NextPage = () => {
             <FormControlLabel value='always' control={<Radio />} label='常に表示' />
             <FormControlLabel value='controlled' control={<Radio />} label='一定枠数以下になったら表示' />
             {/^controlled/.test(nowLimit) ?
-              <TextField id='the-number' label='この枠数以下になったら表示' variant='filled' type='number' defaultValue={/\_/.test(nowLimit) ? nowLimit.split('_')[1] : ''} onBlur={handleBlurLimit} />
+              <TextField id='the-number' label='この枠数以下になったら表示' variant='filled' type='number' defaultValue={defaultControlledNum.current ? defaultControlledNum.current.toString() : nowLimit.split('_')[1]} onBlur={handleBlurLimit} />
               : ''
             }
             <FormControlLabel value='never' control={<Radio />} label='常に非表示' />
@@ -169,7 +192,7 @@ const Home: NextPage = () => {
         </Button>
       </Box>
       <SettingSnackBar open={openforPre} setOpen={setOpenforPre} message='読み込んでいます…' />
-      <SettingSnackBar {...{ open, setOpen }} message='設定しています…' />
+      <SettingSnackBar open={openSaving} setOpen={setOpenSaving} message='設定しています…' />
     </Container >
   );
 };
