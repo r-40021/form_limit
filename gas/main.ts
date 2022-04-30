@@ -99,7 +99,7 @@ function saveData(data: SaveData) {
   const answers = form.getResponses();
   const questionsIndex = getQuestions().items.findIndex(value => value.id === data.id); // 何番目の質問か
   answers.map((value: GoogleAppsScript.Forms.FormResponse) => {
-    
+    const response = value.getItemResponses()[questionsIndex].getResponse();
   })
 }
 
