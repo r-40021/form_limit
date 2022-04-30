@@ -41,7 +41,7 @@ interface Form {
  * @param {GoogleAppsScript.Forms.Item} item 設問のオブジェクト 
  * @returns {GoogleAppsScript.Forms.MultipleChoiceItem | GoogleAppsScript.Forms.ListItem | GoogleAppsScript.Forms.CheckboxItem | {}} 選択肢が入ったオブジェクト
  */
-const getItem = (item: GoogleAppsScript.Forms.Item) :any => {
+const getItem = (item: GoogleAppsScript.Forms.Item): any => {
   const itemType = item.getType();
   switch (itemType) {
     case FormApp.ItemType.MULTIPLE_CHOICE:
@@ -98,8 +98,17 @@ function saveData(data: SaveData) {
   PropertiesService.getScriptProperties().setProperty('data', JSON.stringify(data)); // データ保存
   const answers = form.getResponses();
   const questionsIndex = getQuestions().items.findIndex(value => value.id === data.id); // 何番目の質問か
+  let volumeChoices: Array<Number> = [];
   answers.map((value: GoogleAppsScript.Forms.FormResponse) => {
     const response = value.getItemResponses()[questionsIndex].getResponse();
+    if (Array.isArray(response)) {
+      response.map((elem, index: number) => {
+        let indexVolumeChoices = volumeChoices[index];
+        if (indexVolumeChoices && typeof indexVolumeChoices === 'number') indexVolumeChoices++;
+        else indexVolumeChoices = 1;
+      })
+    }
+
   })
 }
 
@@ -111,7 +120,7 @@ function getSaveData(): SaveData {
  * @param {string} string 切り取られる文字列
  * @returns {string} 切り取られた文字列
  */
- function trimChoiceText(string: string): string{
+function trimChoiceText(string: string): string {
   const start: string = 'ㅤ- 全';
   const end: string = '枠空き)'
   const startIndexOf: number = string.indexOf(start);

@@ -6,7 +6,7 @@ services:
     tty: true
     volumes:
       - ./:/usr/app
-      - ${HOME}:${HOME}
+      - "./home/:${HOME}"
     command: sh -c "yarn dev"
     ports:
       - "3000:3000"
