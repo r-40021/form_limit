@@ -4,7 +4,7 @@
  * @returns {string} 切り取られた文字列
  */
 export default function trimChoiceText(string: string): string{
-  const start: string = 'ㅤ(全';
+  const start: string = 'ㅤ- 全';
   const end: string = '枠空き)'
   const startIndexOf: number = string.indexOf(start);
   const endIndexOf: number = string.indexOf(end);

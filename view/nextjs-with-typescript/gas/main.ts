@@ -82,16 +82,44 @@ function getQuestions(): Form {
     };
     result.items.push(myItem);
   }
-  console.log(result)
   return result;
 }
 
 function saveData(data: SaveData) {
-  PropertiesService.getScriptProperties().setProperty('data', JSON.stringify(data));
+  const oldData = JSON.parse(PropertiesService.getScriptProperties().getProperty('data') || '{}');
+  const form = FormApp.getActiveForm();
+  //選択肢の内容を初期化
+  if ('id' in oldData) {
+    const question = form.getItemById(oldData.id);
+    const choices = getChoices(question).map((c: any) => c.getValue());
+    const newChoices = choices.map((value: string) => trimChoiceText(value));
+    getItem(question).setChoiceValue(newChoices);
+  }
+  PropertiesService.getScriptProperties().setProperty('data', JSON.stringify(data)); // データ保存
+  const answers = form.getResponses();
+  const questionsIndex = getQuestions().items.findIndex(value => value.id === data.id); // 何番目の質問か
+  answers.map((value: GoogleAppsScript.Forms.FormResponse) => {
+    
+  })
 }
 
 function getSaveData(): SaveData {
   return JSON.parse(PropertiesService.getScriptProperties().getProperty('data') || '{}');
+}
+/**
+ * 設問の選択肢の中から、残り枠数などの表示を取り除く関数
+ * @param {string} string 切り取られる文字列
+ * @returns {string} 切り取られた文字列
+ */
+ function trimChoiceText(string: string): string{
+  const start: string = 'ㅤ- 全';
+  const end: string = '枠空き)'
+  const startIndexOf: number = string.indexOf(start);
+  const endIndexOf: number = string.indexOf(end);
+  if (startIndexOf === -1 || endIndexOf === -1) return string;
+  const startIndex = startIndexOf + start.length;
+  const endIndex = endIndexOf;
+  return string.substr(startIndex, endIndex - startIndex);
 }
 
 export { }
